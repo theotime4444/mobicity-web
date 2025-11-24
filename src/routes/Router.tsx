@@ -1,11 +1,16 @@
 import { createBrowserRouter } from "react-router-dom";
-import LoginForm from "../pages/LoginForm.tsx";
+import Login from "../pages/Login.tsx";
+import Tables from "../pages/Tables.tsx";
 
 const router = createBrowserRouter([
     {
         path: "/login",
-        element: <LoginForm/>,
+        element: <Login/>,
     },
+    {
+        path: "/tables",
+        element: <Tables/>
+    }
 ]);
 
 export default router;
