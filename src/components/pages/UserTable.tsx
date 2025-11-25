@@ -1,7 +1,7 @@
-import { Radio, Table, type TableColumnsType } from "antd";
-import type { IUser } from "../model/IUser";
+import { Radio, Table, Flex, type TableColumnsType } from "antd";
+import type { IUser } from "../../model/IUser";
 
-const Tables : React.FC = () => {
+const UserTable : React.FC = () => {
     const columns : TableColumnsType<IUser> = [
         {
             title: 'ID',
@@ -16,7 +16,7 @@ const Tables : React.FC = () => {
             dataIndex: 'lastname',
         },
         {
-            title: 'Email',
+            title: 'Adresse mail',
             dataIndex: 'email',
         },
         {
@@ -36,7 +36,7 @@ const Tables : React.FC = () => {
             lastname: "Admin1",
             email: "Admin1@mail.com",
             password: "root",
-            isAdming: true,
+            isAdmin: true,
         },
         {
             id: 2,
@@ -44,7 +44,7 @@ const Tables : React.FC = () => {
             lastname: "Van der Cuylen",
             email: "Mathias@mail.com",
             password: "password123",
-            isAdming: false,
+            isAdmin: false,
         },
         {
             id: 3,
@@ -52,7 +52,7 @@ const Tables : React.FC = () => {
             lastname: "Van der Cuylen",
             email: "Mathias@mail.com",
             password: "password123",
-            isAdming: false,
+            isAdmin: false,
         },
         {
             id: 4,
@@ -60,7 +60,7 @@ const Tables : React.FC = () => {
             lastname: "Van der Cuylen",
             email: "Mathias@mail.com",
             password: "password123",
-            isAdming: false,
+            isAdmin: false,
         },
         {
             id: 5,
@@ -68,7 +68,7 @@ const Tables : React.FC = () => {
             lastname: "Van der Cuylen",
             email: "Mathias@mail.com",
             password: "password123",
-            isAdming: false,
+            isAdmin: false,
         },
         {
             id: 6,
@@ -76,7 +76,7 @@ const Tables : React.FC = () => {
             lastname: "Van der Cuylen",
             email: "Mathias@mail.com",
             password: "password123",
-            isAdming: false,
+            isAdmin: false,
         },
         {
             id: 7,
@@ -84,7 +84,7 @@ const Tables : React.FC = () => {
             lastname: "Van der Cuylen",
             email: "Mathias@mail.com",
             password: "password123",
-            isAdming: false,
+            isAdmin: false,
         },
         {
             id: 8,
@@ -92,7 +92,7 @@ const Tables : React.FC = () => {
             lastname: "Van der Cuylen",
             email: "Mathias@mail.com",
             password: "password123",
-            isAdming: false,
+            isAdmin: false,
         },
     ];
 
@@ -107,4 +107,4 @@ const Tables : React.FC = () => {
     );
 }
 
-export default Tables;
+export default UserTable;
