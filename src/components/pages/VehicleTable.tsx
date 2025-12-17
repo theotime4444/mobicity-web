@@ -63,10 +63,6 @@ export default function VehicleTable() {
     }
   };
 
-  const handleEdit = (vehicle: IVehicle) => {
-    navigate(`/vehicles/${vehicle.id}/edit`);
-  };
-
   const columns: DataTableColumn<IVehicle>[] = [
     {
       title: 'ID',
@@ -112,7 +108,6 @@ export default function VehicleTable() {
           onPaginationChange={handlePaginationChange}
           onSearch={handleSearch}
           searchPlaceholder="Rechercher un véhicule..."
-          onEdit={handleEdit}
           onDelete={handleDelete}
           editPath={(vehicle) => `/vehicles/${vehicle.id}/edit`}
           rowKey="id"

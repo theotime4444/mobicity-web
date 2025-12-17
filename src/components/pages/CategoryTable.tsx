@@ -63,10 +63,6 @@ export default function CategoryTable() {
     }
   };
 
-  const handleEdit = (category: ICategory) => {
-    navigate(`/categories/${category.id}/edit`);
-  };
-
   const columns: DataTableColumn<ICategory>[] = [
     {
       title: 'ID',
@@ -107,7 +103,6 @@ export default function CategoryTable() {
           onPaginationChange={handlePaginationChange}
           onSearch={handleSearch}
           searchPlaceholder="Rechercher une catégorie..."
-          onEdit={handleEdit}
           onDelete={handleDelete}
           editPath={(category) => `/categories/${category.id}/edit`}
           rowKey="id"

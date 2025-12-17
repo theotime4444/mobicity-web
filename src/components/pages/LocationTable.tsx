@@ -63,10 +63,6 @@ export default function LocationTable() {
     }
   };
 
-  const handleEdit = (location: ILocation) => {
-    navigate(`/locations/${location.id}/edit`);
-  };
-
   const columns: DataTableColumn<ILocation>[] = [
     {
       title: 'ID',
@@ -131,7 +127,6 @@ export default function LocationTable() {
           onPaginationChange={handlePaginationChange}
           onSearch={handleSearch}
           searchPlaceholder="Rechercher un emplacement..."
-          onEdit={handleEdit}
           onDelete={handleDelete}
           editPath={(location) => `/locations/${location.id}/edit`}
           rowKey="id"

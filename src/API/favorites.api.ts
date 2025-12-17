@@ -56,3 +56,19 @@ export async function getFavorites(params?: GetFavoritesParams): Promise<GetFavo
   
   return response.json();
 }
+
+export async function deleteFavorite(userId: number, transportLocationId: number): Promise<void> {
+  const url = getApiUrl(`/v1/admin/favorites/${userId}/${transportLocationId}`);
+  const response = await fetch(url, {
+    method: 'DELETE',
+    headers: getHeaders(),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  
+  if (response.status !== 204) {
+    await response.json();
+  }
+}

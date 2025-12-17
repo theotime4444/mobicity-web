@@ -64,20 +64,17 @@ export default function DataTable<T extends Record<string, unknown>>({
       width: 150,
       render: (_: unknown, record: T) => (
         <Space size="middle">
-          {onEdit && (
+          {(onEdit || editPath) && (
             <Button
               type="link"
               icon={<EditOutlined />}
-              onClick={() => onEdit(record)}
-            >
-              Modifier
-            </Button>
-          )}
-          {editPath && (
-            <Button
-              type="link"
-              icon={<EditOutlined />}
-              onClick={() => navigate(editPath(record))}
+              onClick={() => {
+                if (onEdit) {
+                  onEdit(record);
+                } else if (editPath) {
+                  navigate(editPath(record));
+                }
+              }}
             >
               Modifier
             </Button>

@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Space, message } from 'antd';
 import DataTable from '../common/DataTable';
 import type { DataTableColumn } from '../common/DataTable';
-import { getFavorites } from '../../API/favorites.api';
+import { getFavorites, deleteFavorite } from '../../API/favorites.api';
 import type { IFavorite } from '../../model/IFavorite';
 import { handleApiError } from '../../utils/errorHandler';
 import type { ApiError } from '../../utils/errorHandler';
@@ -47,6 +47,17 @@ export default function FavoriteTable() {
   const handlePaginationChange = (page: number, newPageSize: number) => {
     setCurrentPage(page);
     setPageSize(newPageSize);
+  };
+
+  const handleDelete = async (favorite: IFavorite) => {
+    try {
+      await deleteFavorite(favorite.userId, favorite.transportLocationId);
+      message.success('Favori supprimé avec succès');
+      fetchFavorites(currentPage, pageSize, searchTerm);
+    } catch (err) {
+      const apiError = handleApiError(err);
+      message.error(apiError.message);
+    }
   };
 
   const columns: DataTableColumn<IFavorite>[] = [
@@ -93,7 +104,7 @@ export default function FavoriteTable() {
           onPaginationChange={handlePaginationChange}
           onSearch={handleSearch}
           searchPlaceholder="Rechercher un favori..."
-          showActions={false}
+          onDelete={handleDelete}
           rowKey={(record) => `${record.userId}-${record.transportLocationId}`}
           onRetry={() => fetchFavorites(currentPage, pageSize, searchTerm)}
         />
