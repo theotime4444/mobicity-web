@@ -19,7 +19,7 @@
         "noEmit": true,
         "composite": true,
         "moduleResolution": "bundler",
-        "verbatimModuleSyntax": true,
+        "verbatimModuleSyntax": false,
         "moduleDetection": "force"
     },
     "exclude": ["node_modules"],

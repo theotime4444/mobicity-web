@@ -1,8 +1,8 @@
 export interface IUser {
     id: React.Key;
-    firstname: string;
-    lastname: string;
+    firstName: string;
+    lastName: string;
     email: string;
-    password: string;
-    isAdmin: boolean
+    password?: string; // Optionnel car pas toujours présent dans les réponses API
+    isAdmin: boolean;
 }

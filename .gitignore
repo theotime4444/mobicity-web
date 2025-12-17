@@ -1,3 +1,6 @@
+# Documentation (optionnel - peut être inclus si nécessaire)
+/docs
+
 # Logs
 logs
 *.log
@@ -7,10 +10,16 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
 dist
 dist-ssr
 *.local
+
+# Environment variables
+.env
+.env.local
+.env.*.local
 
 # Editor directories and files
 .vscode/*
@@ -22,3 +31,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# OS
+Thumbs.db

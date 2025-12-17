@@ -1,16 +1,139 @@
-# React + Vite
+# Mobicity Web - Back-Office
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Application React SPA de type back-office pour la gestion de la plateforme Mobicity.
 
-Currently, two official plugins are available:
+## 🚀 Démarrage Rapide avec Docker
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Prérequis
 
-## React Compiler
+- Docker et Docker Compose installés
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Lancement
 
-## Expanding the ESLint configuration
+1. **Cloner ou extraire le projet**
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+2. **Lancer l'application** :
+```bash
+docker compose up --build
+```
+
+Ou simplement :
+```bash
+docker compose up
+```
+
+3. **Accéder à l'application** :
+   - Ouvrir `http://localhost:5173` dans votre navigateur
+
+4. **Se connecter** :
+   - Email : `marie.martin@mail.com`
+   - Mot de passe : `password456`
+
+### Commandes Utiles
+
+- **Démarrer en arrière-plan** : `docker compose up -d --build`
+- **Arrêter** : `docker compose down`
+- **Voir les logs** : `docker compose logs -f`
+- **Rebuild complet** : `docker compose build --no-cache`
+
+## 📋 Configuration
+
+### Variables d'Environnement (Optionnel)
+
+Si l'API backend est sur un autre port ou une autre URL, créer un fichier `.env` :
+
+```env
+VITE_API_BASE_URL=http://localhost:3001
+```
+
+Par défaut, l'application utilise le proxy Vite qui redirige `/v1` vers `http://host.docker.internal:3001`.
+
+## 🏗️ Structure du Projet
+
+```
+src/
+├── API/              # Client API avec exponential retry
+│   ├── client.ts
+│   ├── users.api.ts
+│   ├── vehicles.api.ts
+│   ├── categories.api.ts
+│   ├── locations.api.ts
+│   └── favorites.api.ts
+├── components/       # Composants React
+│   ├── common/      # Composants réutilisables
+│   │   ├── DataTable.tsx
+│   │   ├── SearchBar.tsx
+│   │   ├── Pagination.tsx
+│   │   ├── LoadingSpinner.tsx
+│   │   └── ErrorMessage.tsx
+│   └── pages/       # Pages/Vues
+│       ├── UserTable.tsx
+│       ├── UserForm.tsx
+│       └── ...
+├── context/         # Contextes React
+│   └── AuthContext.tsx
+├── routes/          # Configuration du routing
+│   ├── Router.tsx
+│   └── ProtectedRoute.tsx
+├── utils/           # Utilitaires
+│   ├── constants.ts
+│   ├── retry.ts
+│   └── errorHandler.ts
+└── model/           # Types TypeScript
+    ├── IUser.ts
+    ├── IVehicle.ts
+    └── ...
+```
+
+## ✨ Fonctionnalités
+
+- ✅ **Authentification** avec token JWT
+- ✅ **Gestion complète** de 5 entités (Users, Vehicles, Categories, Locations, Favorites)
+- ✅ **CRUD complet** pour chaque entité
+- ✅ **Pagination** sur toutes les vues
+- ✅ **Recherche** sur toutes les vues
+- ✅ **Exponential retry** pour les requêtes API
+- ✅ **Gestion d'erreurs** différenciée (4XX vs 5XX)
+- ✅ **TypeScript** pour la sécurité des types
+- ✅ **Interface moderne** avec Ant Design
+
+## 🛠️ Technologies
+
+- **React 19** - Bibliothèque UI
+- **TypeScript** - Typage statique
+- **Vite** - Build tool moderne
+- **React Router DOM** - Routing
+- **Ant Design** - Composants UI
+- **Docker** - Containerisation
+
+## 📝 Notes Importantes
+
+- L'application nécessite que l'API backend soit accessible
+- Par défaut, l'API est attendue sur `http://host.docker.internal:3001`
+- Le proxy Vite redirige automatiquement `/v1` vers l'API backend
+- Les tokens d'authentification sont stockés dans `localStorage`
+
+## 🔧 Installation Manuelle (sans Docker)
+
+Si vous préférez installer manuellement :
+
+```bash
+# Installer les dépendances
+npm install
+
+# Lancer en développement
+npm run dev
+
+# Build de production
+npm run build
+```
+
+## 👤 Comptes de Test
+
+- **Administrateur** :
+  - Email : `marie.martin@mail.com`
+  - Mot de passe : `password456`
+
+- **Utilisateur standard** :
+  - Email : `jean.dupont@mail.com`
+  - Mot de passe : `password123`

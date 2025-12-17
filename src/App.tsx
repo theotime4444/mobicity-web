@@ -1,9 +1,18 @@
+import { Suspense } from "react";
 import { RouterProvider } from "react-router-dom";
-import router from "./routes/Router.jsx";
-import './App.css'
+import { AuthProvider } from "./context/AuthContext";
+import router from "./routes/Router";
+import LoadingSpinner from "./components/common/LoadingSpinner";
+import './App.css';
 
-const App : React.FC = () => {
-    return <RouterProvider router={router}/>    
-}
+const App: React.FC = () => {
+    return (
+        <AuthProvider>
+            <Suspense fallback={<LoadingSpinner fullScreen message="Chargement de l'application..." />}>
+                <RouterProvider router={router} />
+            </Suspense>
+        </AuthProvider>
+    );
+};
 
 export default App;

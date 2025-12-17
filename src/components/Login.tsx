@@ -1,16 +1,23 @@
 import { useState } from "react";
-import { Card, Typography, Form, Input, Button, Flex } from "antd";
+import { Card, Typography, Form, Input, Button, message } from "antd";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import LoadingSpinner from "./common/LoadingSpinner";
 
-const Login : React.FC = () => {
-    const [username, setUsername] = useState("");
+const Login: React.FC = () => {
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const { login, loading } = useAuth();
     const navigate = useNavigate();
 
     async function onConnect() {
-        //appel api pour vérif connection
-        if (true) { // si login et mdp correct
+        try {
+            await login(email, password);
+            message.success("Connexion réussie");
             navigate("/");
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : "Erreur lors de la connexion";
+            message.error(errorMessage);
         }
     }
 
@@ -22,14 +29,15 @@ const Login : React.FC = () => {
             <Card>
             <Form layout="vertical">
                 <Form.Item
-                    label="Nom d'utilisateur"
-                    name="username"
+                    label="Adresse email"
+                    name="email"
                     rules={[
-                        { required: true, message: "Veuillez entrer votre nom d'utilisateur" }
+                        { required: true, message: "Veuillez entrer votre adresse email" },
+                        { type: "email", message: "Veuillez entrer une adresse email valide" }
                     ]}
                     validateTrigger="onBlur"
                 >
-                    <Input onChange={e => setUsername(e.target.value)}/>
+                    <Input type="email" onChange={e => setEmail(e.target.value)}/>
                 </Form.Item>
                 <Form.Item
                     label="Mot de passe"
@@ -42,7 +50,14 @@ const Login : React.FC = () => {
                     <Input.Password onChange={e => setPassword(e.target.value)}/>
                 </Form.Item>
                 <Form.Item>
-                    <Button type="primary" htmlType="submit" onClick={onConnect} block>
+                    <Button 
+                        type="primary" 
+                        htmlType="submit" 
+                        onClick={onConnect} 
+                        block 
+                        loading={loading}
+                        disabled={loading}
+                    >
                         Se connecter
                     </Button>
                 </Form.Item>

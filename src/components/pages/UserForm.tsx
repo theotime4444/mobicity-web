@@ -1,83 +1,191 @@
-import { Typography, Card, Form, Input, Button, Switch, Radio } from "antd"
-import { type IUser } from "../../model/IUser"
+// Formulaire de création/édition d'utilisateur
 
-const UserForm : React.FC = ({modifiedUser} : {modifiedUser? : IUser}) => {
-    return (
-        <>
-            <Typography.Title level={3}>
-                {modifiedUser ? "Modification" : "Ajout"} Utilisateur
-            </Typography.Title>
-            <Card>
-                <Form layout="vertical">
-                    <Form.Item<IUser>
-                        label="Prénom"
-                        name="firstname"
-                        rules={[
-                            { required: true, message: "Veuillez entrer votre prénom"},
-                            { max : 100, message: "Le prénom ne peut pas excéder 100 caractères."}
-                        ]}
-                        validateTrigger="onBlur"
-                    >
-                        <Input/>
-                    </Form.Item>
-                    <Form.Item<IUser>
-                        label="Nom de famille"
-                        name="lastname"
-                        rules={[
-                            { required: true, message: "Veuillez entrer votre nom de famille"},
-                            { max : 100, message: "Le nom de famille ne peut pas excéder 100 caractères."}
-                        ]}
-                        validateTrigger="onBlur"
-                    >
-                        <Input/>
-                    </Form.Item>
-                    <Form.Item<IUser>
-                        label="Adresse mail"
-                        name="email"
-                        rules={[
-                            { required: true, message: "Veuillez entrer une adresse mail valide", type:"email"}
-                        ]}
-                        validateTrigger="onBlur"
-                    >
-                        <Input/>
-                    </Form.Item>
-                    <Form.Item<IUser>
-                        label="Mot de passe"
-                        name="password"
-                        rules={[
-                            { required: true, message: "Veuillez entrer un mot de passe"},
-                            { min: 8, max: 50, message: "Le mot de passe doit faire entre 8 et 50 caractères."},
-                            { pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]*$/, message: "Le mot de passe doit être composé au minimum de: 1 maj, 1 min, 1 chiffre, 1 caractère spécial."}
-                        ]}
-                        validateTrigger="onBlur"
-                    >
-                        <Input/>
-                    </Form.Item>
-                    <Form.Item<IUser>
-                        required
-                        label="Administrateur ?"   
-                        name="isAdmin" 
-                    >
-                        <Radio.Group
-                            block
-                            options={[
-                                {label : 'Oui', value: true},
-                                {label : 'Non', value: false},
-                            ]}
-                            defaultValue={false}
-                            
-                        />
-                    </Form.Item>
+import { useEffect, useState } from 'react';
+import { Typography, Card, Form, Input, Button, Radio, message } from 'antd';
+import { useNavigate, useParams } from 'react-router-dom';
+import type { IUser } from '../../model/IUser';
+import { createUser, updateUser, getUserById } from '../../API/users.api';
+import { handleApiError } from '../../utils/errorHandler';
+import LoadingSpinner from '../common/LoadingSpinner';
+import ErrorMessage from '../common/ErrorMessage';
+import type { ApiError } from '../../utils/errorHandler';
 
-                    <Form.Item>
-                        <Button type="primary" htmlType="submit" block>
-                            Se connecter
-                        </Button>
-                    </Form.Item>
-                </Form>
-            </Card>
-        </>
-    );
+export default function UserForm() {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(!!id);
+  const [error, setError] = useState<ApiError | null>(null);
+  const isEditMode = !!id;
+
+  // Charger les données de l'utilisateur en mode édition
+  useEffect(() => {
+    if (id) {
+      const fetchUser = async () => {
+        setInitialLoading(true);
+        setError(null);
+        try {
+          const user = await getUserById(id);
+          form.setFieldsValue({
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            isAdmin: user.isAdmin,
+          });
+        } catch (err) {
+          const apiError = handleApiError(err);
+          setError(apiError);
+          message.error(apiError.message);
+        } finally {
+          setInitialLoading(false);
+        }
+      };
+
+      fetchUser();
+    }
+  }, [id, form]);
+
+  const onFinish = async (values: Omit<IUser, 'id'>) => {
+    setLoading(true);
+    setError(null);
+    try {
+      if (isEditMode && id) {
+        // Mode édition : ne mettre à jour que les champs fournis
+        const updateData: Partial<Omit<IUser, 'id'>> = {
+          firstName: values.firstName,
+          lastName: values.lastName,
+          email: values.email,
+          isAdmin: values.isAdmin,
+        };
+        
+        // Ne mettre à jour le mot de passe que s'il est fourni
+        if (values.password && values.password.trim() !== '') {
+          updateData.password = values.password;
+        }
+        
+        await updateUser(id, updateData);
+        message.success('Utilisateur modifié avec succès');
+      } else {
+        // Mode création
+        await createUser(values);
+        message.success('Utilisateur créé avec succès');
+      }
+      navigate('/');
+    } catch (err) {
+      const apiError = handleApiError(err);
+      setError(apiError);
+      message.error(apiError.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (initialLoading) {
+    return <LoadingSpinner message="Chargement des données de l'utilisateur..." />;
+  }
+
+  if (error && initialLoading) {
+    return <ErrorMessage error={error} fullWidth onRetry={() => window.location.reload()} />;
+  }
+
+  return (
+    <div style={{ padding: '24px', maxWidth: '600px', margin: '0 auto' }}>
+      <Typography.Title level={3}>
+        {isEditMode ? 'Modification' : 'Ajout'} Utilisateur
+      </Typography.Title>
+      <Card>
+        {error && !initialLoading && (
+          <div style={{ marginBottom: '16px' }}>
+            <ErrorMessage error={error} fullWidth />
+          </div>
+        )}
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={onFinish}
+          disabled={loading}
+        >
+          <Form.Item<IUser>
+            label="Prénom"
+            name="firstName"
+            rules={[
+              { required: true, message: 'Veuillez entrer votre prénom' },
+              { min: 1, message: 'Le prénom doit contenir au moins 1 caractère.' },
+            ]}
+            validateTrigger="onBlur"
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item<IUser>
+            label="Nom de famille"
+            name="lastName"
+            rules={[
+              { required: true, message: 'Veuillez entrer votre nom de famille' },
+              { min: 1, message: 'Le nom de famille doit contenir au moins 1 caractère.' },
+            ]}
+            validateTrigger="onBlur"
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item<IUser>
+            label="Adresse mail"
+            name="email"
+            rules={[
+              { required: true, message: 'Veuillez entrer une adresse mail valide', type: 'email' },
+            ]}
+            validateTrigger="onBlur"
+          >
+            <Input type="email" />
+          </Form.Item>
+
+          <Form.Item<IUser>
+            label="Mot de passe"
+            name="password"
+            rules={[
+              ...(isEditMode
+                ? []
+                : [{ required: true, message: 'Veuillez entrer un mot de passe' }]),
+              { min: 6, message: 'Le mot de passe doit contenir au moins 6 caractères.' },
+            ]}
+            validateTrigger="onBlur"
+            extra={isEditMode ? 'Laissez vide pour ne pas modifier le mot de passe' : undefined}
+          >
+            <Input.Password />
+          </Form.Item>
+
+          <Form.Item<IUser>
+            required
+            label="Administrateur ?"
+            name="isAdmin"
+            initialValue={false}
+          >
+            <Radio.Group
+              block
+              options={[
+                { label: 'Oui', value: true },
+                { label: 'Non', value: false },
+              ]}
+            />
+          </Form.Item>
+
+          <Form.Item>
+            <Button type="primary" htmlType="submit" block loading={loading}>
+              {isEditMode ? 'Modifier' : 'Créer'}
+            </Button>
+            <Button
+              type="default"
+              block
+              style={{ marginTop: '8px' }}
+              onClick={() => navigate('/users')}
+            >
+              Annuler
+            </Button>
+          </Form.Item>
+        </Form>
+      </Card>
+    </div>
+  );
 }
-
-export default UserForm;

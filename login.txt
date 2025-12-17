@@ -1,0 +1,10 @@
+# Comptes de connexion - Mobicity Back-Office
+
+## Administrateur
+- Email : marie.martin@mail.com
+- Mot de passe : password456
+
+## Utilisateur standard
+- Email : jean.dupont@mail.com
+- Mot de passe : password123
+
