@@ -32,9 +32,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const login = async (email: string, password: string): Promise<void> => {
     setLoading(true);
     try {
+      // Utiliser apiClient pour bénéficier du proxy Vite en dev
+      // En dev : utilise le proxy Vite (/v1 -> localhost:3001)
+      // En prod : utilise l'URL complète
       const isDev = import.meta.env.DEV || import.meta.env.MODE === 'development';
-      const envApiUrl = import.meta.env.VITE_API_BASE_URL;
-      const endpoint = isDev ? '/v1/auth/login' : `${envApiUrl || 'http://localhost:3001'}/v1/auth/login`;
+      const endpoint = '/v1/auth/login';
       
       const response = await fetch(endpoint, {
         method: 'POST',

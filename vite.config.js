@@ -11,10 +11,12 @@ export default defineConfig({
       usePolling: true, // Nécessaire pour Docker sur Windows
     },
     // Proxy pour éviter les problèmes CORS en développement
-    // L'API est montée directement sur /, donc on proxy tout vers l'API
+    // Le proxy redirige /v1 vers l'API backend
+    // En local : localhost:3001 (par défaut)
+    // Pour Docker : définir VITE_API_BASE_URL=http://host.docker.internal:3001
     proxy: {
       '/v1': {
-        target: 'http://host.docker.internal:3001',
+        target: 'http://localhost:3001',
         changeOrigin: true,
         secure: false,
       },

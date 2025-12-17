@@ -40,13 +40,22 @@ docker compose up
 
 ### Variables d'Environnement (Optionnel)
 
-Si l'API backend est sur un autre port ou une autre URL, créer un fichier `.env` :
+**En développement local** (sans Docker) :
+- Le proxy Vite redirige automatiquement `/v1` vers `http://localhost:3001`
+- Aucune configuration nécessaire si l'API est sur `localhost:3001`
 
-```env
-VITE_API_BASE_URL=http://localhost:3001
-```
-
-Par défaut, l'application utilise le proxy Vite qui redirige `/v1` vers `http://host.docker.internal:3001`.
+**Avec Docker** :
+- Le proxy pointe par défaut vers `http://localhost:3001`
+- Si l'API est dans un autre container, modifier `vite.config.js` :
+  ```js
+  proxy: {
+    '/v1': {
+      target: 'http://host.docker.internal:3001', // ou l'URL de votre API
+      changeOrigin: true,
+      secure: false,
+    },
+  }
+  ```
 
 ## 🏗️ Structure du Projet
 
