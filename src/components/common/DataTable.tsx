@@ -1,5 +1,3 @@
-// Composant de tableau générique réutilisable
-
 import { Table, Button, Space, Popconfirm } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import type { TableColumnsType } from 'antd';
@@ -53,7 +51,6 @@ export default function DataTable<T extends Record<string, unknown>>({
 }: DataTableProps<T>) {
   const navigate = useNavigate();
 
-  // Ajouter la colonne d'actions si nécessaire
   const finalColumns = [...columns];
   
   if (showActions && (onEdit || onDelete || editPath)) {

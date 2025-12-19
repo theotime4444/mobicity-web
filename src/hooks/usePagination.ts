@@ -1,5 +1,3 @@
-// Hook personnalisé pour gérer la pagination
-
 import { useState, useCallback } from 'react';
 import { DEFAULT_PAGE_SIZE } from '../utils/constants';
 
@@ -39,7 +37,7 @@ export function usePagination(
 
   const setPageSizeWithCallback = useCallback((size: number) => {
     setPageSize(size);
-    setCurrentPage(1); // Reset à la première page lors du changement de taille
+    setCurrentPage(1);
     if (onPageChange) {
       onPageChange(1, size);
     }

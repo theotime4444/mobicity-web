@@ -1,5 +1,3 @@
-// Composant de chargement
-
 import { Spin } from 'antd';
 
 interface LoadingSpinnerProps {

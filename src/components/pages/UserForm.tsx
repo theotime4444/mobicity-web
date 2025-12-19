@@ -1,5 +1,3 @@
-// Formulaire de création/édition d'utilisateur
-
 import { useEffect, useState } from 'react';
 import { Typography, Card, Form, Input, Button, Radio, message } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -19,7 +17,6 @@ export default function UserForm() {
   const [error, setError] = useState<ApiError | null>(null);
   const isEditMode = !!id;
 
-  // Charger les données de l'utilisateur en mode édition
   useEffect(() => {
     if (id) {
       const fetchUser = async () => {
@@ -51,7 +48,6 @@ export default function UserForm() {
     setError(null);
     try {
       if (isEditMode && id) {
-        // Mode édition : ne mettre à jour que les champs fournis
         const updateData: Partial<Omit<IUser, 'id'>> = {
           firstName: values.firstName,
           lastName: values.lastName,
@@ -59,7 +55,6 @@ export default function UserForm() {
           isAdmin: values.isAdmin,
         };
         
-        // Ne mettre à jour le mot de passe que s'il est fourni
         if (values.password && values.password.trim() !== '') {
           updateData.password = values.password;
         }
@@ -67,7 +62,6 @@ export default function UserForm() {
         await updateUser(id, updateData);
         message.success('Utilisateur modifié avec succès');
       } else {
-        // Mode création
         await createUser(values);
         message.success('Utilisateur créé avec succès');
       }

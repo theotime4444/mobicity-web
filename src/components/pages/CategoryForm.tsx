@@ -1,5 +1,3 @@
-// Formulaire de création/édition de catégorie
-
 import { useEffect, useState } from 'react';
 import { Typography, Card, Form, Input, Button, message } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';

@@ -1,5 +1,3 @@
-// Formulaire de création/édition d'emplacement de transport
-
 import { useEffect, useState } from 'react';
 import { Typography, Card, Form, Input, Button, InputNumber, Select, message } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -36,7 +34,6 @@ export default function LocationForm() {
         setCategories(cats);
         setVehicles(vehs);
       } catch (err) {
-        // Erreur silencieuse - les options ne sont pas critiques
       }
     };
     loadOptions();
@@ -54,7 +51,6 @@ export default function LocationForm() {
             address: location.address,
             categoryId: location.categoryId,
             vehicleId: location.vehicleId,
-            // Normaliser les valeurs en nombres pour éviter les problèmes de validation
             latitude: location.latitude != null ? Number(location.latitude) : null,
             longitude: location.longitude != null ? Number(location.longitude) : null,
           });
@@ -85,7 +81,6 @@ export default function LocationForm() {
         address: values.address,
         categoryId: values.categoryId ?? null,
         vehicleId: values.vehicleId ?? null,
-        // Préserver les valeurs originales si elles ne sont pas modifiées (undefined)
         latitude: values.latitude ?? originalLocation?.latitude ?? null,
         longitude: values.longitude ?? originalLocation?.longitude ?? null,
       };
@@ -186,7 +181,6 @@ export default function LocationForm() {
             label="Latitude"
             name="latitude"
             normalize={(value) => {
-              // Convertir en nombre si la valeur existe, sinon null
               if (value === null || value === undefined || value === '') {
                 return null;
               }
@@ -196,11 +190,9 @@ export default function LocationForm() {
             rules={[
               {
                 validator: (_, value) => {
-                  // Accepter null/undefined (champ optionnel)
                   if (value === null || value === undefined || value === '') {
                     return Promise.resolve();
                   }
-                  // Valider que c'est un nombre dans la plage valide
                   const numValue = typeof value === 'string' ? parseFloat(value) : Number(value);
                   if (isNaN(numValue)) {
                     return Promise.reject(new Error('La latitude doit être un nombre'));
@@ -220,7 +212,6 @@ export default function LocationForm() {
             label="Longitude"
             name="longitude"
             normalize={(value) => {
-              // Convertir en nombre si la valeur existe, sinon null
               if (value === null || value === undefined || value === '') {
                 return null;
               }
@@ -230,11 +221,9 @@ export default function LocationForm() {
             rules={[
               {
                 validator: (_, value) => {
-                  // Accepter null/undefined (champ optionnel)
                   if (value === null || value === undefined || value === '') {
                     return Promise.resolve();
                   }
-                  // Valider que c'est un nombre dans la plage valide
                   const numValue = typeof value === 'string' ? parseFloat(value) : Number(value);
                   if (isNaN(numValue)) {
                     return Promise.reject(new Error('La longitude doit être un nombre'));

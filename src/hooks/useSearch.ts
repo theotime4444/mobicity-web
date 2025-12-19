@@ -1,5 +1,3 @@
-// Hook personnalisé pour gérer la recherche avec debounce
-
 import { useState, useEffect, useRef, useCallback } from 'react';
 
 interface UseSearchOptions {
@@ -29,18 +27,15 @@ export function useSearch(
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    // Nettoyer le timer précédent
     if (debounceTimer.current) {
       clearTimeout(debounceTimer.current);
     }
 
-    // Créer un nouveau timer
     debounceTimer.current = setTimeout(() => {
       setDebouncedSearch(searchTerm);
       onSearch?.(searchTerm);
     }, debounceMs);
 
-    // Cleanup
     return () => {
       if (debounceTimer.current) {
         clearTimeout(debounceTimer.current);

@@ -1,4 +1,3 @@
-// API endpoints pour les véhicules
 import type { IVehicle } from '../model/IVehicle';
 import { parseApiErrorResponse } from '../utils/apiError';
 
@@ -105,7 +104,6 @@ export async function updateVehicle(id: string | number, vehicle: Partial<Omit<I
     throw errorData;
   }
   
-  // Gérer le cas 204 No Content (pas de body dans la réponse)
   if (response.status === 204) {
     return { ...vehicle, id } as IVehicle;
   }

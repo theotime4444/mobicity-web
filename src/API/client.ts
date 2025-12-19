@@ -1,6 +1,4 @@
-﻿// Client API centralisé avec exponential retry et gestion d'erreurs
-
-import { API_BASE_URL, MAX_RETRIES, RETRY_DELAY_BASE } from '../utils/constants';
+﻿import { API_BASE_URL, MAX_RETRIES, RETRY_DELAY_BASE } from '../utils/constants';
 import { withExponentialRetry } from '../utils/retry';
 import { handleApiError } from '../utils/errorHandler';
 

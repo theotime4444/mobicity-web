@@ -1,4 +1,3 @@
-// API endpoints pour les emplacements de transport
 import type { ILocation } from '../model/ILocation';
 import { parseApiErrorResponse } from '../utils/apiError';
 
@@ -103,7 +102,6 @@ export async function updateLocation(id: string | number, location: Partial<Omit
     throw errorData;
   }
   
-  // Gérer le cas 204 No Content (pas de body dans la réponse)
   if (response.status === 204) {
     return { ...location, id } as ILocation;
   }

@@ -1,5 +1,4 @@
-﻿// API endpoints pour les utilisateurs
-import type { IUser } from '../model/IUser';
+﻿import type { IUser } from '../model/IUser';
 import { parseApiErrorResponse } from '../utils/apiError';
 
 export interface GetUsersParams {
@@ -105,7 +104,6 @@ export async function updateUser(id: string | number, user: Partial<Omit<IUser, 
     throw errorData;
   }
   
-  // Gérer le cas 204 No Content (pas de body dans la réponse)
   if (response.status === 204) {
     return { ...user, id } as IUser;
   }

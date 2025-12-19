@@ -1,5 +1,3 @@
-// Hook personnalisé pour gérer les appels API avec loading et erreurs
-
 import { useState, useEffect, useCallback } from 'react';
 import { handleApiError } from '../utils/errorHandler';
 import type { ApiError } from '../utils/errorHandler';

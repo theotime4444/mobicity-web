@@ -1,4 +1,3 @@
-// API endpoints pour les catégories
 import type { ICategory } from '../model/ICategory';
 import { parseApiErrorResponse } from '../utils/apiError';
 
@@ -105,7 +104,6 @@ export async function updateCategory(id: string | number, category: Partial<Omit
     throw errorData;
   }
   
-  // Gérer le cas 204 No Content (pas de body dans la réponse)
   if (response.status === 204) {
     return { ...category, id } as ICategory;
   }

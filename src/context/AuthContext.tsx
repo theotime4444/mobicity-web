@@ -1,5 +1,3 @@
-// Context d'authentification
-
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { apiClient } from '../API/client';
 
@@ -32,9 +30,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const login = async (email: string, password: string): Promise<void> => {
     setLoading(true);
     try {
-      // Utiliser apiClient pour bénéficier du proxy Vite en dev
-      // En dev : utilise le proxy Vite (/v1 -> localhost:3001)
-      // En prod : utilise l'URL complète
       const isDev = import.meta.env.DEV || import.meta.env.MODE === 'development';
       const endpoint = '/v1/auth/login';
       
@@ -50,7 +45,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         const errorMessage = response.status === 401 
           ? 'Nom d\'utilisateur ou mot de passe incorrect'
           : 'Erreur lors de la connexion';
-        console.error(`[ERROR][AUTH][LOGIN] HTTP ${response.status} – ${errorMessage}`);
+        console.error(`[FRONT][AUTH][LOGIN] HTTP ${response.status} – ${errorMessage}`);
         throw new Error(errorMessage);
       }
 
@@ -63,8 +58,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } catch (error) {
       setLoading(false);
       if (error instanceof Error && !error.message.includes('HTTP')) {
-        // Erreur réseau ou autre erreur non-HTTP
-        console.error(`[ERROR][AUTH][LOGIN] – ${error.message}`);
+        console.error(`[FRONT][AUTH][LOGIN] ${error.message}`);
       }
       throw error;
     }

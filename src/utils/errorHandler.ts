@@ -1,5 +1,3 @@
-// Gestion centralisée des erreurs API
-
 export interface ApiError {
   message: string;
   status?: number;
@@ -7,11 +5,7 @@ export interface ApiError {
   isServerError: boolean;
 }
 
-/**
- * Extrait un message d'erreur lisible depuis une erreur API
- */
 export function handleApiError(error: unknown): ApiError {
-  // Erreur avec réponse HTTP
   if (error && typeof error === 'object' && 'response' in error) {
     const response = (error as { response?: { status?: number; data?: unknown } }).response;
     if (response) {
@@ -21,7 +15,6 @@ export function handleApiError(error: unknown): ApiError {
 
       let message = 'Une erreur est survenue';
       
-      // Essayer d'extraire le message depuis response.data
       if (response.data && typeof response.data === 'object') {
         const data = response.data as Record<string, unknown>;
         if (typeof data.message === 'string') {
@@ -31,8 +24,6 @@ export function handleApiError(error: unknown): ApiError {
         }
       }
 
-      // Messages spécifiques selon le code
-      // Si un message a déjà été extrait du body, on le garde (il est plus précis)
       const hasExtractedMessage = message !== 'Une erreur est survenue';
       
       if (status === 401) {
@@ -50,9 +41,8 @@ export function handleApiError(error: unknown): ApiError {
         message = hasExtractedMessage ? message : 'Erreur serveur. Veuillez réessayer plus tard.';
       }
 
-      // Logging de l'erreur
       const errorType = isServerError ? 'SERVER' : isClientError ? 'CLIENT' : 'HTTP';
-      console.error(`[ERROR][${errorType}] HTTP ${status} – ${message}`);
+      console.error(`[FRONT][ERROR][${errorType}] HTTP ${status} – ${message}`);
 
       return {
         message,
@@ -63,20 +53,18 @@ export function handleApiError(error: unknown): ApiError {
     }
   }
 
-  // Erreur réseau
   if (error instanceof TypeError && error.message.includes('fetch')) {
     const networkError = {
       message: 'Erreur de connexion. Vérifiez votre connexion internet.',
       isClientError: false,
       isServerError: false
     };
-    console.error('[ERROR][NETWORK] – Erreur de connexion. Vérifiez votre connexion internet.');
+    console.error('[FRONT][ERROR][NETWORK] Erreur de connexion. Vérifiez votre connexion internet.');
     return networkError;
   }
 
-  // Erreur générique
   const message = error instanceof Error ? error.message : 'Une erreur inattendue est survenue';
-  console.error(`[ERROR][GENERIC] – ${message}`);
+  console.error(`[FRONT][ERROR][GENERIC] ${message}`);
   return {
     message,
     isClientError: false,

@@ -1,5 +1,3 @@
-// Composant d'affichage d'erreur
-
 import { Alert, Button, Space } from 'antd';
 import type { ApiError } from '../../utils/errorHandler';
 

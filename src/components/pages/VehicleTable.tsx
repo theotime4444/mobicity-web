@@ -1,5 +1,3 @@
-// Tableau des véhicules avec pagination et recherche
-
 import { useState, useEffect, useCallback } from 'react';
 import { Button, Space, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
@@ -29,13 +27,10 @@ export default function VehicleTable() {
       const vehicles = await getVehicles({ page, limit, search });
       setVehicles(vehicles);
       
-      // Calculer le total approximatif basé sur la pagination
-      // Si on a moins d'éléments que le limit, on est à la dernière page
       if (vehicles.length < limit) {
         setTotal((page - 1) * limit + vehicles.length);
       } else {
-        // On suppose qu'il y a au moins une page de plus
-        setTotal(page * limit + 1); // +1 pour indiquer qu'il y a plus
+        setTotal(page * limit + 1);
       }
     } catch (err) {
       const apiError = handleApiError(err);
@@ -52,7 +47,6 @@ export default function VehicleTable() {
 
   const handleSearch = useCallback((value: string) => {
     setSearchTerm((prevSearchTerm) => {
-      // Ne réinitialiser la page que si le terme de recherche a réellement changé
       if (prevSearchTerm !== value) {
         setCurrentPage(1);
       }

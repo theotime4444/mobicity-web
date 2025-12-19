@@ -1,5 +1,3 @@
-// Composant de pagination (wrapper autour de Pagination d'Ant Design)
-
 import { Pagination as AntPagination } from 'antd';
 import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from '../../utils/constants';
 

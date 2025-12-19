@@ -2,7 +2,6 @@ import { createBrowserRouter } from "react-router-dom";
 import { lazy } from "react";
 import ProtectedRoute from "./ProtectedRoute";
 
-// Lazy loading des composants pour améliorer les performances (bonus)
 const Login = lazy(() => import("../components/Login"));
 const MainPage = lazy(() => import("../components/MainPage"));
 const UserTable = lazy(() => import("../components/pages/UserTable"));
@@ -27,7 +26,6 @@ const router = createBrowserRouter([
             </ProtectedRoute>
         ),
     },
-    // Routes Users
     {
         path: "/users",
         element: (
@@ -52,7 +50,6 @@ const router = createBrowserRouter([
             </ProtectedRoute>
         ),
     },
-    // Routes Vehicles
     {
         path: "/vehicles",
         element: (
@@ -77,7 +74,6 @@ const router = createBrowserRouter([
             </ProtectedRoute>
         ),
     },
-    // Routes Categories
     {
         path: "/categories",
         element: (
@@ -102,7 +98,6 @@ const router = createBrowserRouter([
             </ProtectedRoute>
         ),
     },
-    // Routes Locations
     {
         path: "/locations",
         element: (

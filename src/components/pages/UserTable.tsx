@@ -1,5 +1,3 @@
-// Tableau des utilisateurs avec pagination et recherche
-
 import { useState, useEffect, useCallback } from 'react';
 import { Button, Space, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
@@ -29,13 +27,10 @@ export default function UserTable() {
       const users = await getUsers({ page, limit, search });
       setUsers(users);
       
-      // Calculer le total approximatif basé sur la pagination
-      // Si on a moins d'éléments que le limit, on est à la dernière page
       if (users.length < limit) {
         setTotal((page - 1) * limit + users.length);
       } else {
-        // On suppose qu'il y a au moins une page de plus
-        setTotal(page * limit + 1); // +1 pour indiquer qu'il y a plus
+        setTotal(page * limit + 1);
       }
     } catch (err) {
       const apiError = handleApiError(err);
@@ -52,9 +47,8 @@ export default function UserTable() {
 
   const handleSearch = useCallback((value: string) => {
     setSearchTerm((prevSearchTerm) => {
-      // Ne réinitialiser la page que si le terme de recherche a réellement changé
       if (prevSearchTerm !== value) {
-        setCurrentPage(1); // Reset à la première page lors d'une recherche
+        setCurrentPage(1);
       }
       return value;
     });
@@ -69,7 +63,6 @@ export default function UserTable() {
     try {
       await deleteUser(user.id);
       message.success('Utilisateur supprimé avec succès');
-      // Recharger les données
       fetchUsers(currentPage, pageSize, searchTerm);
     } catch (err) {
       const apiError = handleApiError(err);
