@@ -1,5 +1,6 @@
 // API endpoints pour les véhicules
 import type { IVehicle } from '../model/IVehicle';
+import { parseApiErrorResponse } from '../utils/apiError';
 
 export interface GetVehiclesParams {
   page?: number;
@@ -39,7 +40,9 @@ export async function getVehicles(params?: GetVehiclesParams): Promise<GetVehicl
     queryParams.append('offset', String((params.page - 1) * params.limit));
   }
   if (params?.limit) queryParams.append('limit', String(params.limit));
-  if (params?.search) queryParams.append('search', params.search);
+  if (params?.search !== undefined && params?.search !== null) {
+    queryParams.append('search', params.search);
+  }
 
   const queryString = queryParams.toString();
   const endpoint = `/v1/admin/vehicles${queryString ? `?${queryString}` : ''}`;
@@ -51,7 +54,8 @@ export async function getVehicles(params?: GetVehiclesParams): Promise<GetVehicl
   });
   
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    const errorData = await parseApiErrorResponse(response);
+    throw errorData;
   }
   
   return response.json();
@@ -65,7 +69,8 @@ export async function getVehicleById(id: string | number): Promise<IVehicle> {
   });
   
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    const errorData = await parseApiErrorResponse(response);
+    throw errorData;
   }
   
   return response.json();
@@ -80,7 +85,8 @@ export async function createVehicle(vehicle: Omit<IVehicle, 'id'>): Promise<IVeh
   });
   
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    const errorData = await parseApiErrorResponse(response);
+    throw errorData;
   }
   
   return response.json();
@@ -95,7 +101,13 @@ export async function updateVehicle(id: string | number, vehicle: Partial<Omit<I
   });
   
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    const errorData = await parseApiErrorResponse(response);
+    throw errorData;
+  }
+  
+  // Gérer le cas 204 No Content (pas de body dans la réponse)
+  if (response.status === 204) {
+    return { ...vehicle, id } as IVehicle;
   }
   
   return response.json();
@@ -109,7 +121,8 @@ export async function deleteVehicle(id: string | number): Promise<void> {
   });
   
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    const errorData = await parseApiErrorResponse(response);
+    throw errorData;
   }
   
   if (response.status !== 204) {

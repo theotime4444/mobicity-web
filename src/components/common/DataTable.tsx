@@ -100,33 +100,33 @@ export default function DataTable<T extends Record<string, unknown>>({
     });
   }
 
-  if (loading) {
-    return <LoadingSpinner message="Chargement des données..." />;
-  }
-
-  if (error) {
-    return <ErrorMessage error={error} onRetry={onRetry} fullWidth />;
-  }
-
   return (
     <div>
       <SearchBar
         onSearch={onSearch}
         placeholder={searchPlaceholder}
       />
-      <Table
-        columns={finalColumns}
-        dataSource={data}
-        rowKey={rowKey}
-        pagination={false}
-        scroll={{ x: 'max-content' }}
-      />
-      <Pagination
-        current={pagination.current}
-        total={pagination.total}
-        pageSize={pagination.pageSize}
-        onChange={onPaginationChange}
-      />
+      {loading ? (
+        <LoadingSpinner message="Chargement des données..." />
+      ) : error ? (
+        <ErrorMessage error={error} onRetry={onRetry} fullWidth />
+      ) : (
+        <>
+          <Table
+            columns={finalColumns}
+            dataSource={data}
+            rowKey={rowKey}
+            pagination={false}
+            scroll={{ x: 'max-content' }}
+          />
+          <Pagination
+            current={pagination.current}
+            total={pagination.total}
+            pageSize={pagination.pageSize}
+            onChange={onPaginationChange}
+          />
+        </>
+      )}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 // API endpoints pour les catégories
 import type { ICategory } from '../model/ICategory';
+import { parseApiErrorResponse } from '../utils/apiError';
 
 export interface GetCategoriesParams {
   page?: number;
@@ -39,7 +40,9 @@ export async function getCategories(params?: GetCategoriesParams): Promise<GetCa
     queryParams.append('offset', String((params.page - 1) * params.limit));
   }
   if (params?.limit) queryParams.append('limit', String(params.limit));
-  if (params?.search) queryParams.append('search', params.search);
+  if (params?.search !== undefined && params?.search !== null) {
+    queryParams.append('search', params.search);
+  }
 
   const queryString = queryParams.toString();
   const endpoint = `/v1/admin/categories${queryString ? `?${queryString}` : ''}`;
@@ -51,7 +54,8 @@ export async function getCategories(params?: GetCategoriesParams): Promise<GetCa
   });
   
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    const errorData = await parseApiErrorResponse(response);
+    throw errorData;
   }
   
   return response.json();
@@ -65,7 +69,8 @@ export async function getCategoryById(id: string | number): Promise<ICategory> {
   });
   
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    const errorData = await parseApiErrorResponse(response);
+    throw errorData;
   }
   
   return response.json();
@@ -80,7 +85,8 @@ export async function createCategory(category: Omit<ICategory, 'id'>): Promise<I
   });
   
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    const errorData = await parseApiErrorResponse(response);
+    throw errorData;
   }
   
   return response.json();
@@ -95,7 +101,13 @@ export async function updateCategory(id: string | number, category: Partial<Omit
   });
   
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    const errorData = await parseApiErrorResponse(response);
+    throw errorData;
+  }
+  
+  // Gérer le cas 204 No Content (pas de body dans la réponse)
+  if (response.status === 204) {
+    return { ...category, id } as ICategory;
   }
   
   return response.json();
@@ -109,7 +121,8 @@ export async function deleteCategory(id: string | number): Promise<void> {
   });
   
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    const errorData = await parseApiErrorResponse(response);
+    throw errorData;
   }
   
   if (response.status !== 204) {

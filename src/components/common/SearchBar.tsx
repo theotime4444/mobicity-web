@@ -17,10 +17,40 @@ export default function SearchBar({
   debounceMs = 300,
   defaultValue = ''
 }: SearchBarProps) {
-  const [searchTerm, setSearchTerm] = useState(defaultValue);
+  // Utiliser une fonction d'initialisation pour éviter les réinitialisations
+  const [searchTerm, setSearchTerm] = useState(() => defaultValue);
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
+  const onSearchRef = useRef(onSearch);
+  const isInitialMount = useRef(true);
+  const previousSearchTerm = useRef(defaultValue);
+  // Garder une référence stable de la valeur pour éviter les pertes d'état
+  const searchTermRef = useRef(defaultValue);
+
+  // Mettre à jour la référence de onSearch sans déclencher l'effet
+  useEffect(() => {
+    onSearchRef.current = onSearch;
+  }, [onSearch]);
+
+  // Synchroniser la ref avec l'état
+  useEffect(() => {
+    searchTermRef.current = searchTerm;
+  }, [searchTerm]);
 
   useEffect(() => {
+    // Ne pas appeler onSearch au montage initial
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      previousSearchTerm.current = searchTerm;
+      return;
+    }
+
+    // Ne pas appeler onSearch si la valeur n'a pas changé
+    if (searchTerm === previousSearchTerm.current) {
+      return;
+    }
+
+    previousSearchTerm.current = searchTerm;
+
     // Nettoyer le timer précédent
     if (debounceTimer.current) {
       clearTimeout(debounceTimer.current);
@@ -28,7 +58,7 @@ export default function SearchBar({
 
     // Créer un nouveau timer
     debounceTimer.current = setTimeout(() => {
-      onSearch(searchTerm);
+      onSearchRef.current(searchTerm);
     }, debounceMs);
 
     // Cleanup
@@ -37,10 +67,13 @@ export default function SearchBar({
         clearTimeout(debounceTimer.current);
       }
     };
-  }, [searchTerm, onSearch, debounceMs]);
+  }, [searchTerm, debounceMs]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
+    const newValue = e.target.value;
+    // Mettre à jour immédiatement pour que l'utilisateur voie ce qu'il tape
+    setSearchTerm(newValue);
+    searchTermRef.current = newValue;
   };
 
   return (

@@ -1,5 +1,6 @@
 ﻿// API endpoints pour les utilisateurs
 import type { IUser } from '../model/IUser';
+import { parseApiErrorResponse } from '../utils/apiError';
 
 export interface GetUsersParams {
   page?: number;
@@ -39,7 +40,9 @@ export async function getUsers(params?: GetUsersParams): Promise<GetUsersRespons
     queryParams.append('offset', String((params.page - 1) * params.limit));
   }
   if (params?.limit) queryParams.append('limit', String(params.limit));
-  if (params?.search) queryParams.append('search', params.search);
+  if (params?.search !== undefined && params?.search !== null) {
+    queryParams.append('search', params.search);
+  }
 
   const queryString = queryParams.toString();
   const endpoint = `/v1/admin/users${queryString ? `?${queryString}` : ''}`;
@@ -51,7 +54,8 @@ export async function getUsers(params?: GetUsersParams): Promise<GetUsersRespons
   });
   
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    const errorData = await parseApiErrorResponse(response);
+    throw errorData;
   }
   
   return response.json();
@@ -65,7 +69,8 @@ export async function getUserById(id: string | number): Promise<IUser> {
   });
   
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    const errorData = await parseApiErrorResponse(response);
+    throw errorData;
   }
   
   return response.json();
@@ -80,7 +85,8 @@ export async function createUser(user: Omit<IUser, 'id'>): Promise<IUser> {
   });
   
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    const errorData = await parseApiErrorResponse(response);
+    throw errorData;
   }
   
   return response.json();
@@ -95,7 +101,13 @@ export async function updateUser(id: string | number, user: Partial<Omit<IUser, 
   });
   
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    const errorData = await parseApiErrorResponse(response);
+    throw errorData;
+  }
+  
+  // Gérer le cas 204 No Content (pas de body dans la réponse)
+  if (response.status === 204) {
+    return { ...user, id } as IUser;
   }
   
   return response.json();
@@ -109,10 +121,12 @@ export async function deleteUser(id: string | number): Promise<void> {
   });
   
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    const errorData = await parseApiErrorResponse(response);
+    throw errorData;
   }
   
   if (response.status !== 204) {
     await response.json();
   }
 }
+

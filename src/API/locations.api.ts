@@ -1,5 +1,6 @@
 // API endpoints pour les emplacements de transport
 import type { ILocation } from '../model/ILocation';
+import { parseApiErrorResponse } from '../utils/apiError';
 
 export interface GetLocationsParams {
   page?: number;
@@ -51,7 +52,8 @@ export async function getLocations(params?: GetLocationsParams): Promise<GetLoca
   });
   
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    const errorData = await parseApiErrorResponse(response);
+    throw errorData;
   }
   
   return response.json();
@@ -65,7 +67,8 @@ export async function getLocationById(id: string | number): Promise<ILocation> {
   });
   
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    const errorData = await parseApiErrorResponse(response);
+    throw errorData;
   }
   
   return response.json();
@@ -80,7 +83,8 @@ export async function createLocation(location: Omit<ILocation, 'id'>): Promise<I
   });
   
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    const errorData = await parseApiErrorResponse(response);
+    throw errorData;
   }
   
   return response.json();
@@ -95,7 +99,13 @@ export async function updateLocation(id: string | number, location: Partial<Omit
   });
   
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    const errorData = await parseApiErrorResponse(response);
+    throw errorData;
+  }
+  
+  // Gérer le cas 204 No Content (pas de body dans la réponse)
+  if (response.status === 204) {
+    return { ...location, id } as ILocation;
   }
   
   return response.json();
@@ -109,7 +119,8 @@ export async function deleteLocation(id: string | number): Promise<void> {
   });
   
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    const errorData = await parseApiErrorResponse(response);
+    throw errorData;
   }
   
   if (response.status !== 204) {

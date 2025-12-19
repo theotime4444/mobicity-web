@@ -179,7 +179,7 @@ export default function UserForm() {
               type="default"
               block
               style={{ marginTop: '8px' }}
-              onClick={() => navigate('/users')}
+              onClick={() => navigate('/')}
             >
               Annuler
             </Button>

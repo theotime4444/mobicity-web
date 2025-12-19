@@ -28,7 +28,15 @@ export default function UserTable() {
     try {
       const users = await getUsers({ page, limit, search });
       setUsers(users);
-      setTotal(users.length);
+      
+      // Calculer le total approximatif basé sur la pagination
+      // Si on a moins d'éléments que le limit, on est à la dernière page
+      if (users.length < limit) {
+        setTotal((page - 1) * limit + users.length);
+      } else {
+        // On suppose qu'il y a au moins une page de plus
+        setTotal(page * limit + 1); // +1 pour indiquer qu'il y a plus
+      }
     } catch (err) {
       const apiError = handleApiError(err);
       setError(apiError);
@@ -42,10 +50,15 @@ export default function UserTable() {
     fetchUsers(currentPage, pageSize, searchTerm);
   }, [currentPage, pageSize, searchTerm, fetchUsers]);
 
-  const handleSearch = (value: string) => {
-    setSearchTerm(value);
-    setCurrentPage(1); // Reset à la première page lors d'une recherche
-  };
+  const handleSearch = useCallback((value: string) => {
+    setSearchTerm((prevSearchTerm) => {
+      // Ne réinitialiser la page que si le terme de recherche a réellement changé
+      if (prevSearchTerm !== value) {
+        setCurrentPage(1); // Reset à la première page lors d'une recherche
+      }
+      return value;
+    });
+  }, []);
 
   const handlePaginationChange = (page: number, size: number) => {
     setCurrentPage(page);

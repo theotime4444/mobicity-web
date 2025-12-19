@@ -1,5 +1,5 @@
 import type { TabsProps } from 'antd';
-import { Flex, Tabs, Button } from 'antd';
+import { Flex, Tabs, Button, Typography } from 'antd';
 import { LogoutOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -7,7 +7,6 @@ import UserTable from './pages/UserTable';
 import VehicleTable from './pages/VehicleTable';
 import CategoryTable from './pages/CategoryTable';
 import LocationTable from './pages/LocationTable';
-import FavoriteTable from './pages/FavoriteTable';
 
 const items: TabsProps['items'] = [
   {
@@ -27,13 +26,8 @@ const items: TabsProps['items'] = [
   },
   {
     key: '4',
-    label: 'Locations',
+    label: 'Emplacements',
     children: <LocationTable />,
-  },
-  {
-    key: '5',
-    label: 'Favoris',
-    children: <FavoriteTable />,
   },
 ];
 
@@ -49,7 +43,9 @@ export default function MainPage() {
   return (
     <div style={{ padding: '24px' }}>
       <Flex justify="space-between" align="center" style={{ marginBottom: '24px' }}>
-        <h1>Back-Office Mobicity</h1>
+        <Typography.Title level={1} style={{ margin: 0 }}>
+          Back-Office Mobicity
+        </Typography.Title>
         <Button icon={<LogoutOutlined />} onClick={handleLogout}>
           Déconnexion
         </Button>

@@ -23,6 +23,7 @@ export default function LocationForm() {
   const [error, setError] = useState<ApiError | null>(null);
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [vehicles, setVehicles] = useState<IVehicle[]>([]);
+  const [originalLocation, setOriginalLocation] = useState<ILocation | null>(null);
   const isEditMode = !!id;
 
   useEffect(() => {
@@ -48,12 +49,14 @@ export default function LocationForm() {
         setError(null);
         try {
           const location = await getLocationById(id);
+          setOriginalLocation(location);
           form.setFieldsValue({
             address: location.address,
             categoryId: location.categoryId,
             vehicleId: location.vehicleId,
-            latitude: location.latitude,
-            longitude: location.longitude,
+            // Normaliser les valeurs en nombres pour éviter les problèmes de validation
+            latitude: location.latitude != null ? Number(location.latitude) : null,
+            longitude: location.longitude != null ? Number(location.longitude) : null,
           });
         } catch (err) {
           const apiError = handleApiError(err);
@@ -82,8 +85,9 @@ export default function LocationForm() {
         address: values.address,
         categoryId: values.categoryId ?? null,
         vehicleId: values.vehicleId ?? null,
-        latitude: values.latitude ?? null,
-        longitude: values.longitude ?? null,
+        // Préserver les valeurs originales si elles ne sont pas modifiées (undefined)
+        latitude: values.latitude ?? originalLocation?.latitude ?? null,
+        longitude: values.longitude ?? originalLocation?.longitude ?? null,
       };
 
       if (isEditMode && id) {
@@ -181,8 +185,32 @@ export default function LocationForm() {
           <Form.Item<ILocation>
             label="Latitude"
             name="latitude"
+            normalize={(value) => {
+              // Convertir en nombre si la valeur existe, sinon null
+              if (value === null || value === undefined || value === '') {
+                return null;
+              }
+              const numValue = typeof value === 'string' ? parseFloat(value) : Number(value);
+              return isNaN(numValue) ? null : numValue;
+            }}
             rules={[
-              { type: 'number', min: -90, max: 90, message: 'La latitude doit être entre -90 et 90' },
+              {
+                validator: (_, value) => {
+                  // Accepter null/undefined (champ optionnel)
+                  if (value === null || value === undefined || value === '') {
+                    return Promise.resolve();
+                  }
+                  // Valider que c'est un nombre dans la plage valide
+                  const numValue = typeof value === 'string' ? parseFloat(value) : Number(value);
+                  if (isNaN(numValue)) {
+                    return Promise.reject(new Error('La latitude doit être un nombre'));
+                  }
+                  if (numValue < -90 || numValue > 90) {
+                    return Promise.reject(new Error('La latitude doit être entre -90 et 90'));
+                  }
+                  return Promise.resolve();
+                },
+              },
             ]}
           >
             <InputNumber style={{ width: '100%' }} step={0.00000001} />
@@ -191,8 +219,32 @@ export default function LocationForm() {
           <Form.Item<ILocation>
             label="Longitude"
             name="longitude"
+            normalize={(value) => {
+              // Convertir en nombre si la valeur existe, sinon null
+              if (value === null || value === undefined || value === '') {
+                return null;
+              }
+              const numValue = typeof value === 'string' ? parseFloat(value) : Number(value);
+              return isNaN(numValue) ? null : numValue;
+            }}
             rules={[
-              { type: 'number', min: -180, max: 180, message: 'La longitude doit être entre -180 et 180' },
+              {
+                validator: (_, value) => {
+                  // Accepter null/undefined (champ optionnel)
+                  if (value === null || value === undefined || value === '') {
+                    return Promise.resolve();
+                  }
+                  // Valider que c'est un nombre dans la plage valide
+                  const numValue = typeof value === 'string' ? parseFloat(value) : Number(value);
+                  if (isNaN(numValue)) {
+                    return Promise.reject(new Error('La longitude doit être un nombre'));
+                  }
+                  if (numValue < -180 || numValue > 180) {
+                    return Promise.reject(new Error('La longitude doit être entre -180 et 180'));
+                  }
+                  return Promise.resolve();
+                },
+              },
             ]}
           >
             <InputNumber style={{ width: '100%' }} step={0.00000001} />

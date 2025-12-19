@@ -28,7 +28,15 @@ export default function LocationTable() {
     try {
       const locations = await getLocations({ page, limit, search });
       setLocations(locations);
-      setTotal(locations.length);
+      
+      // Calculer le total approximatif basé sur la pagination
+      // Si on a moins d'éléments que le limit, on est à la dernière page
+      if (locations.length < limit) {
+        setTotal((page - 1) * limit + locations.length);
+      } else {
+        // On suppose qu'il y a au moins une page de plus
+        setTotal(page * limit + 1); // +1 pour indiquer qu'il y a plus
+      }
     } catch (err) {
       const apiError = handleApiError(err);
       setError(apiError);
@@ -42,10 +50,15 @@ export default function LocationTable() {
     fetchLocations(currentPage, pageSize, searchTerm);
   }, [currentPage, pageSize, searchTerm, fetchLocations]);
 
-  const handleSearch = (value: string) => {
-    setSearchTerm(value);
-    setCurrentPage(1);
-  };
+  const handleSearch = useCallback((value: string) => {
+    setSearchTerm((prevSearchTerm) => {
+      // Ne réinitialiser la page que si le terme de recherche a réellement changé
+      if (prevSearchTerm !== value) {
+        setCurrentPage(1);
+      }
+      return value;
+    });
+  }, []);
 
   const handlePaginationChange = (page: number, newPageSize: number) => {
     setCurrentPage(page);

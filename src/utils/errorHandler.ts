@@ -32,16 +32,22 @@ export function handleApiError(error: unknown): ApiError {
       }
 
       // Messages spécifiques selon le code
+      // Si un message a déjà été extrait du body, on le garde (il est plus précis)
+      const hasExtractedMessage = message !== 'Une erreur est survenue';
+      
       if (status === 401) {
-        message = 'Non autorisé. Veuillez vous connecter.';
+        message = hasExtractedMessage ? message : 'Non autorisé. Veuillez vous connecter.';
       } else if (status === 403) {
-        message = 'Accès interdit.';
+        message = hasExtractedMessage ? message : 'Accès refusé : vous n\'avez pas les droits administrateur.';
       } else if (status === 404) {
-        message = 'Ressource non trouvée.';
+        message = hasExtractedMessage ? message : 'Ressource non trouvée.';
+      } else if (status === 409) {
+        // Conflit (ex: email déjà utilisé)
+        message = hasExtractedMessage ? message : 'Cette ressource existe déjà.';
       } else if (status === 422) {
-        message = 'Données invalides.';
+        message = hasExtractedMessage ? message : 'Données invalides.';
       } else if (isServerError) {
-        message = 'Erreur serveur. Veuillez réessayer plus tard.';
+        message = hasExtractedMessage ? message : 'Erreur serveur. Veuillez réessayer plus tard.';
       }
 
       return {
