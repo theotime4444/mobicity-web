@@ -50,6 +50,10 @@ export function handleApiError(error: unknown): ApiError {
         message = hasExtractedMessage ? message : 'Erreur serveur. Veuillez réessayer plus tard.';
       }
 
+      // Logging de l'erreur
+      const errorType = isServerError ? 'SERVER' : isClientError ? 'CLIENT' : 'HTTP';
+      console.error(`[ERROR][${errorType}] HTTP ${status} – ${message}`);
+
       return {
         message,
         status,
@@ -61,15 +65,18 @@ export function handleApiError(error: unknown): ApiError {
 
   // Erreur réseau
   if (error instanceof TypeError && error.message.includes('fetch')) {
-    return {
+    const networkError = {
       message: 'Erreur de connexion. Vérifiez votre connexion internet.',
       isClientError: false,
       isServerError: false
     };
+    console.error('[ERROR][NETWORK] – Erreur de connexion. Vérifiez votre connexion internet.');
+    return networkError;
   }
 
   // Erreur générique
   const message = error instanceof Error ? error.message : 'Une erreur inattendue est survenue';
+  console.error(`[ERROR][GENERIC] – ${message}`);
   return {
     message,
     isClientError: false,

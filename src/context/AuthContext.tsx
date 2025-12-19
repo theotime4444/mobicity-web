@@ -47,10 +47,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
       });
 
       if (!response.ok) {
-        if (response.status === 401) {
-          throw new Error('Nom d\'utilisateur ou mot de passe incorrect');
-        }
-        throw new Error('Erreur lors de la connexion');
+        const errorMessage = response.status === 401 
+          ? 'Nom d\'utilisateur ou mot de passe incorrect'
+          : 'Erreur lors de la connexion';
+        console.error(`[ERROR][AUTH][LOGIN] HTTP ${response.status} – ${errorMessage}`);
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
@@ -61,6 +62,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       apiClient.setAuthToken(authToken);
     } catch (error) {
       setLoading(false);
+      if (error instanceof Error && !error.message.includes('HTTP')) {
+        // Erreur réseau ou autre erreur non-HTTP
+        console.error(`[ERROR][AUTH][LOGIN] – ${error.message}`);
+      }
       throw error;
     }
     setLoading(false);

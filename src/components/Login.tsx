@@ -17,6 +17,7 @@ const Login: React.FC = () => {
             navigate("/");
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : "Erreur lors de la connexion";
+            console.error(`[ERROR][LOGIN] – ${errorMessage}`);
             message.error(errorMessage);
         }
     }

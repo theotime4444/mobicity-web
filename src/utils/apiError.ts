@@ -19,6 +19,10 @@ export async function parseApiErrorResponse(response: Response): Promise<{ respo
     message = response.statusText || `Erreur HTTP ${response.status}`;
   }
   
+  // Logging de l'erreur HTTP
+  const errorType = response.status >= 500 ? 'SERVER' : response.status >= 400 ? 'CLIENT' : 'HTTP';
+  console.error(`[ERROR][${errorType}][API] HTTP ${response.status} – ${message}`);
+  
   return {
     response: {
       status: response.status,
